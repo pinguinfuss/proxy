@@ -116,6 +116,12 @@ func retentionPackageKey(reg *retention.Registry, key string) (string, error) {
 	if p.Version != "" {
 		return "", fmt.Errorf("package PURL must not carry a version")
 	}
+	// A rule names a whole package; qualifiers and subpaths would be
+	// dropped on the way to the stored PURL, so refuse them rather than
+	// let "?type=pom" quietly cover every file of the package.
+	if len(p.Qualifiers) > 0 || p.Subpath != "" {
+		return "", fmt.Errorf("package PURL must not carry qualifiers or a subpath")
+	}
 	canonical, ok := reg.Canonical(p)
 	if !ok {
 		return "", fmt.Errorf("retention is not supported for %s packages in this version", p.Type)

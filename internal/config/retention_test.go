@@ -89,6 +89,10 @@ func TestRetentionRulesErrors(t *testing.T) {
 		{"conflicting package keys", func(r *RetentionConfig) {
 			r.Packages = map[string]string{"pkg:npm/%40babel/core": "1d", "pkg:npm/@babel/core": "2d"}
 		}, "conflicts with another key"},
+		{"package PURL with qualifiers", func(r *RetentionConfig) { r.Packages = map[string]string{"pkg:npm/lodash?type=tgz": "1d"} },
+			"must not carry qualifiers or a subpath"},
+		{"package PURL with subpath", func(r *RetentionConfig) { r.Packages = map[string]string{"pkg:npm/lodash#lib": "1d"} },
+			"must not carry qualifiers or a subpath"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
