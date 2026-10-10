@@ -123,10 +123,13 @@ func retentionPackageKey(reg *retention.Registry, key string) (string, error) {
 		return "", fmt.Errorf("package PURL must not carry qualifiers or a subpath")
 	}
 	canonical, ok := reg.Canonical(p)
-	if !ok {
-		return "", fmt.Errorf("retention is not supported for %s packages in this version", p.Type)
+	if ok {
+		return canonical, nil
 	}
-	return canonical, nil
+	if key, registered := reg.KeyForDBEcosystem(purl.PURLTypeToEcosystem(p.Type)); registered {
+		return "", fmt.Errorf("does not match how %s packages are stored; see the package rule forms in docs/configuration.md", key)
+	}
+	return "", fmt.Errorf("retention is not supported for %s packages in this version", p.Type)
 }
 
 func sortedKeys(m map[string]string) []string {

@@ -84,6 +84,10 @@ func TestRetentionRulesErrors(t *testing.T) {
 		{"julia package", func(r *RetentionConfig) { r.Packages = map[string]string{"pkg:julia/Example": "1d"} },
 			"not supported for julia"},
 		{"invalid package PURL", func(r *RetentionConfig) { r.Packages = map[string]string{"lodash": "1d"} }, "not a valid package PURL"},
+		{"npm package without its scope marker", func(r *RetentionConfig) { r.Packages = map[string]string{"pkg:npm/babel/core": "1d"} },
+			"does not match how npm packages are stored"},
+		{"npm package with an encoded scope separator", func(r *RetentionConfig) { r.Packages = map[string]string{"pkg:npm/%40babel%2Fcore": "1d"} },
+			"does not match how npm packages are stored"},
 		{"versioned package PURL", func(r *RetentionConfig) { r.Packages = map[string]string{"pkg:npm/lodash@4.17.21": "1d"} },
 			"must not carry a version"},
 		{"conflicting package keys", func(r *RetentionConfig) {
